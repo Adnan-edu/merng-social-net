@@ -1,14 +1,21 @@
-const Post = require('../../models/Post');
+const postsResolvers = require('./posts');
+const usersResolvers = require('./users');
+const commentsResolvers = require('./comments');
 
 module.exports = {
+  Post: {
+    likeCount: (parent) => parent.likes.length,
+    commentCount: (parent) => parent.comments.length
+  },
   Query: {
-    async getPosts() {
-      try {
-        const posts = await Post.find();
-        return posts;
-      } catch (err) {
-        throw new Error(err);
-      }
-    }
+    ...postsResolvers.Query
+  },
+  Mutation: {
+    ...usersResolvers.Mutation,
+    ...postsResolvers.Mutation,
+    ...commentsResolvers.Mutation
+  },
+  Subscription: {
+    ...postsResolvers.Subscription
   }
 };

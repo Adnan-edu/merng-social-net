@@ -14,7 +14,7 @@ function generateToken(user) {
     {
       id: user.id,
       email: user.email,
-      userName: user.userName
+      username: user.username
     },
     SECRET_KEY,
     { expiresIn: '1h' }
@@ -23,14 +23,14 @@ function generateToken(user) {
 
 module.exports = {
   Mutation: {
-    async login(_, { userName, password }) {
-      const { errors, valid } = validateLoginInput(userName, password);
+    async login(_, { username, password }) {
+      const { errors, valid } = validateLoginInput(username, password);
 
       if (!valid) {
         throw new UserInputError('Errors', { errors });
       }
 
-      const user = await User.findOne({ userName });
+      const user = await User.findOne({ username });
 
       if (!user) {
         errors.general = 'User not found';
@@ -54,12 +54,12 @@ module.exports = {
     async register(
       _,
       {
-        registerInput: { userName, email, password, confirmPassword }
+        registerInput: { username, email, password, confirmPassword }
       }
     ) {
       // Validate user data
       const { valid, errors } = validateRegisterInput(
-        userName,
+        username,
         email,
         password,
         confirmPassword
@@ -68,11 +68,11 @@ module.exports = {
         throw new UserInputError('Errors', { errors });
       }
       // TODO: Make sure user doesnt already exist
-      const user = await User.findOne({ userName });
+      const user = await User.findOne({ username });
       if (user) {
-        throw new UserInputError('userName is taken', {
+        throw new UserInputError('Username is taken', {
           errors: {
-            userName: 'This userName is taken'
+            username: 'This username is taken'
           }
         });
       }
@@ -81,7 +81,7 @@ module.exports = {
 
       const newUser = new User({
         email,
-        userName,
+        username,
         password,
         createdAt: new Date().toISOString()
       });
